@@ -1,7 +1,7 @@
 {
-  "name": "Express-ES6-ESLint-template",
+  "name": "Manito",
   "version": "1.0.0",
-  "description": "ES6 Style Express template with Airbnb style ESLint",
+  "description": "Depromeet 4th Team 9 Project Manito",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
