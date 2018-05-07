@@ -5,14 +5,14 @@ const schema = new mongoose.Schema({
   name: { type: String, required: true },
   gender: { type: String, uppercase: true, enum: ['M', 'W'] },
   birthday: { type: Date, min: new Date('1900-01-01') },
-  profileImgUrl: { type: String, required: true },
+  profileImgUrl: { type: String },
   bloodType: { type: String, uppercase: true, enum: ['A', 'B', 'AB', 'O'] },
   job: { type: String },
   hobby: { type: String },
   like: { type: String },
   dislike: { type: String },
   pushToken: { type: String },
-  currentPlaying: { type: mongoose.Schema.ObjectId },
+  currentPlaying: { type: mongoose.Schema.ObjectId, default: null },
 }, {
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
 });
@@ -31,7 +31,7 @@ class Users {
       hobby: this.hobby,
       like: this.like,
       dislike: this.dislike,
-      currentPlaying: this.currentPlaying,
+      currentPlaying: this.currentPlaying || null,
     };
   }
 }
