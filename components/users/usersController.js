@@ -1,7 +1,19 @@
 const debug = require('debug')('dev');
-const { checkProperty } = require('../manitoLib');
+const { checkProperty, uploadToS3, deleteFromS3 } = require('../manitoLib');
 const { Users } = require('../db');
 const { createToken } = require('../../middlewares/auth');
+
+const uploadProfile = async (file, user) => {
+  try {
+    const { originalname, buffer } = file;
+    const keyName = `profile-images/${user._id}-${originalname}`;
+    const returnFromS3 = await uploadToS3(buffer, keyName);
+    user.profileImgUrl = returnFromS3.Location;
+    await user.save();
+  } catch (err) {
+    throw err;
+  }
+};
 
 const createUser = async (req, res, next) => {
   try {
@@ -9,10 +21,6 @@ const createUser = async (req, res, next) => {
       req.body,
       ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike'],
     );
-    if (req.file) {
-      // TODO: Image S3 Upload 필요함!
-      console.log(req.file);
-    }
     const {
       uuid, name, gender, birthday, bloodType, job, hobby, like, dislike,
     } = req.body;
@@ -21,6 +29,9 @@ const createUser = async (req, res, next) => {
       uuid, name, gender, birthday: birthObj, bloodType, job, hobby, like, dislike,
     });
     await user.save();
+    if (req.file) {
+      await uploadProfile(req.file, user);
+    }
     debug(`Created User Id : ${user._id}`);
     res.send(user);
   } catch (err) {
@@ -41,7 +52,13 @@ const getUser = async (req, res, next) => {
 const editUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    debug(req.body);
+    const user = await Users.findOne({ _id: userId });
+    if (req.file) {
+      const prevPic = user.profileImgUrl.replace('https://dep-manito.s3.ap-northeast-2.amazonaws.com/', '');
+      console.log(prevPic);
+      await deleteFromS3(prevPic);
+      await uploadProfile(req.file, user);
+    }
     await Users.update({ _id: userId }, { $set: req.body });
     res.end();
   } catch (err) {
