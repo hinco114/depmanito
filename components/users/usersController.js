@@ -1,6 +1,7 @@
 const debug = require('debug')('dev');
 const { checkProperty } = require('../manitoLib');
 const { Users } = require('../db');
+const { createToken } = require('../../middlewares/auth');
 
 const createUser = async (req, res, next) => {
   try {
@@ -48,6 +49,16 @@ const editUser = async (req, res, next) => {
   }
 };
 
+const loginUser = async (req, res, next) => {
+  try {
+    checkProperty(req.body, ['uuid']);
+    const token = await createToken(req.body.uuid);
+    res.json({ token });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  getUser, createUser, editUser,
+  getUser, createUser, editUser, loginUser,
 };
