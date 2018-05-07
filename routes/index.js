@@ -8,6 +8,7 @@ const multipart = multer({
 }).single('profileImg');
 
 const { getUser, createUser, editUser } = require('../components/users/usersController');
+const { createRoom, getRoomInformation } = require('../components/rooms/roomsController');
 
 module.exports = (router) => {
   router.route('/users')
@@ -15,5 +16,8 @@ module.exports = (router) => {
   router.route('/users/:userId')
     .put(multipart, editUser)
     .get(getUser);
+  router.route('/rooms')
+    .get(getRoomInformation)
+    .post(createRoom);
   return router;
 };

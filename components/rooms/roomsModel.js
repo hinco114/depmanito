@@ -17,14 +17,15 @@ class Rooms {
       roomCode: this.roomCode,
       startDate: this.startDate,
       endDate: this.endDate,
+      isPlaying: this.isPlaying,
     };
   }
 
   static findByCode(roomCode) {
-    return this.find({ roomCode });
+    return this.findOne({ roomCode });
   }
 
-  isPlaying() {
+  get isPlaying() {
     const now = Date.now();
     return this.startDate <= now && this.endDate > now;
   }
