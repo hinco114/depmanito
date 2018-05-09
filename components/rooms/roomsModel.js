@@ -5,6 +5,7 @@ const schema = new mongoose.Schema({
   roomCode: { type: String, uppercase: true, unique: true, index: true },
   startDate: { type: Date },
   endDate: { type: Date },
+  state: { type: String, enum: ['READY', 'PLAYING', 'END'], default: 'READY' },
 }, {
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
 });
@@ -26,8 +27,11 @@ class Rooms {
   }
 
   get isPlaying() {
-    const now = Date.now();
-    return this.startDate <= now && this.endDate > now;
+    return this.state === 'PLAYING';
+  }
+
+  get joinable() {
+    return this.state === 'READY';
   }
 }
 

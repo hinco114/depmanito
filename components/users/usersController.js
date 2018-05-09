@@ -72,6 +72,7 @@ const loginUser = async (req, res, next) => {
     const token = await createToken(req.body.uuid);
     res.json({ token });
   } catch (err) {
+    err.status = 400;
     next(err);
   }
 };

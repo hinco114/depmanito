@@ -10,6 +10,9 @@ const errorMiddlewares = require('./middlewares/errors');
 // Load DB (Connection)
 const components = require('./components/db');
 
+// Execute Cron Job
+require('./cron');
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
