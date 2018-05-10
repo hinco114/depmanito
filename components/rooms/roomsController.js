@@ -69,12 +69,15 @@ const changeState = async () => {
     const rooms = await Rooms.find({ state: { $ne: 'END' } });
     rooms.forEach((room) => {
       if (room.startDate <= now) {
-        if (room.endDate > now) {
+        if (room.state === 'READY' && room.endDate > now) {
+          console.log(`Room Code [${room.roomCode}] is PLAYED!`);
           room.state = 'PLAYING';
-        } else {
+          room.save();
+        } else if (room.state === 'PLAYING' && room.endDate <= now) {
+          console.log(`Room Code [${room.roomCode}] is ENDED!`);
           room.state = 'END';
+          room.save();
         }
-        room.save();
       }
     });
   } catch (err) {
