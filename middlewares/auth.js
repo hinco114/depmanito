@@ -35,7 +35,7 @@ const authMiddleware = async (req, res, next) => {
       err.status = 401;
       throw err;
     }
-    req.user = decoded;
+    req.user = user;
     next();
   } catch (err) {
     next(err);
