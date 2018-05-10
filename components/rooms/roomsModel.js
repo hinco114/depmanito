@@ -2,7 +2,13 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
   roomTitle: { type: String },
-  roomCode: { type: String, uppercase: true, unique: true, index: true },
+  roomCode: {
+    type: String,
+    match: /^([A-Z]|\d){6}$/,
+    uppercase: true,
+    unique: true,
+    index: true,
+  },
   startDate: { type: Date },
   endDate: { type: Date },
   state: { type: String, enum: ['READY', 'PLAYING', 'END'], default: 'READY' },
@@ -18,7 +24,7 @@ class Rooms {
       roomCode: this.roomCode,
       startDate: this.startDate,
       endDate: this.endDate,
-      isPlaying: this.isPlaying,
+      state: this.state,
     };
   }
 

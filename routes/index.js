@@ -22,7 +22,8 @@ module.exports = (router) => {
     .put(authMiddleware, multipart, editUser)
     .get(authMiddleware, getUser);
   router.route('/rooms')
-    .get(authMiddleware, getRoomInformation)
     .post(authMiddleware, createRoom);
+  router.route('/rooms/:roomCode')
+    .get(authMiddleware, getRoomInformation);
   return router;
 };

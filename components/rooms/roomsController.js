@@ -17,8 +17,11 @@ const createRoom = async (req, res, next) => {
     debug(`Created Room Id : ${room._id}`);
     res.send(room.resFormat());
   } catch (err) {
-    if (err.message.indexOf('roomCode') > -1) {
+    if (err.message.indexOf('roomCode_1 dup key') > -1) {
       err.message = '방 코드번호가 중복됩니다.';
+      err.status = 400;
+    } else if (err.message.indexOf('Rooms validation failed: roomCode:') > -1) {
+      err.message = '방 코드번호는 6자리의 문자와 숫자로 이루어져야 합니다.';
       err.status = 400;
     }
     next(err);
@@ -27,8 +30,8 @@ const createRoom = async (req, res, next) => {
 
 const getRoomInformation = async (req, res, next) => {
   try {
-    checkProperty(req.query, ['roomCode']);
-    const room = await Rooms.findByCode(req.query.roomCode);
+    const { roomCode } = req.params;
+    const room = await Rooms.findByCode(roomCode);
     res.send(room ? room.resFormat() : { _id: null });
   } catch (err) {
     next(err);
