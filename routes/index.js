@@ -10,7 +10,7 @@ const multipart = multer({
 const {
   getUser, createUser, editUser, loginUser,
 } = require('../components/users/usersController');
-const { createRoom, getRoomInformation } = require('../components/rooms/roomsController');
+const { createRoom, getRoomInformation, joinRoom } = require('../components/rooms/roomsController');
 const { authMiddleware } = require('../middlewares/auth');
 
 module.exports = (router) => {
@@ -25,5 +25,7 @@ module.exports = (router) => {
     .post(authMiddleware, createRoom);
   router.route('/rooms/:roomCode')
     .get(authMiddleware, getRoomInformation);
+  router.route('/rooms/:roomCode/join')
+    .post(authMiddleware, joinRoom);
   return router;
 };

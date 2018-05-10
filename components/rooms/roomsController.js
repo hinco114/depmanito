@@ -1,6 +1,6 @@
 const debug = require('debug')('dev');
 const { checkProperty } = require('../manitoLib');
-const { Rooms } = require('../db');
+const { Rooms, Participants } = require('../db');
 
 const createRoom = async (req, res, next) => {
   try {
@@ -38,6 +38,31 @@ const getRoomInformation = async (req, res, next) => {
   }
 };
 
+const joinRoom = async (req, res, next) => {
+  try {
+    const { roomCode } = req.params;
+    const room = await Rooms.findByCode(roomCode);
+    console.log(room.joinable);
+    if (!room.joinable) {
+      const err = new Error('Not joinable Room');
+      err.status = 400;
+      throw err;
+    }
+    const isAlreadyJoined = await Participants.findOne({ roomId: room._id, userId: req.user._id });
+    if (isAlreadyJoined) {
+      const err = new Error('Already Joined Room');
+      err.status = 400;
+      throw err;
+    }
+    const paricipant = new Participants({ roomId: room._id, userId: req.user._id });
+    await paricipant.save();
+
+    res.send(paricipant);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const changeState = async () => {
   try {
     const now = new Date();
@@ -58,5 +83,5 @@ const changeState = async () => {
 };
 
 module.exports = {
-  createRoom, getRoomInformation, changeState,
+  createRoom, getRoomInformation, changeState, joinRoom
 };
