@@ -35,6 +35,25 @@ const getRoomInformation = async (req, res, next) => {
   }
 };
 
+const changeState = async () => {
+  try {
+    const now = new Date();
+    const rooms = await Rooms.find({ state: { $ne: 'END' } });
+    rooms.forEach((room) => {
+      if (room.startDate <= now) {
+        if (room.endDate > now) {
+          room.state = 'PLAYING';
+        } else {
+          room.state = 'END';
+        }
+        room.save();
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
 module.exports = {
-  createRoom, getRoomInformation,
+  createRoom, getRoomInformation, changeState,
 };

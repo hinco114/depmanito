@@ -1,23 +1,10 @@
 const { CronJob } = require('cron');
-const { Rooms } = require('./components/db');
+const { changeState } = require('./components/rooms/roomsController');
 
 /**
- * Room 상태를 1분마다 검사하여 시작 or 종료 시킨다.
+ * Room 상태를 매분 1초에 검사하여 매칭과 상태를 변경한다.
  */
-const updateRoomState = new CronJob('1 * * * * *', async () => {
-  const now = new Date();
-  const rooms = await Rooms.find({ state: { $ne: 'END' } });
-  rooms.forEach((room) => {
-    if (room.startDate <= now) {
-      if (room.endDate > now) {
-        room.state = 'PLAYING';
-      } else {
-        room.state = 'END';
-      }
-      room.save();
-    }
-  });
-}, null, true, 'Asia/Seoul');
+const updateRoomState = new CronJob('1 * * * * *', changeState, null, true, 'Asia/Seoul');
 
 module.exports = {
   updateRoomState,
