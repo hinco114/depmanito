@@ -5,7 +5,9 @@ const { SECRET_KEY, EXPIRES } = require('../configs/config').auth;
 const createToken = async (uuid) => {
   const user = await Users.findOne({ uuid });
   if (!user) {
-    throw new Error('User not found');
+    const err = new Error('User not found');
+    err.status = 400;
+    throw err;
   }
   const payloads = {
     userId: user._id,

@@ -43,6 +43,11 @@ const getUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
     const user = await Users.findById(userId);
+    if (!user) {
+      const err = new Error('User not found');
+      err.status = 400;
+      throw err;
+    }
     res.send(user.resFormat());
   } catch (err) {
     next(err);
@@ -52,6 +57,11 @@ const getUser = async (req, res, next) => {
 const editUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
+    if (userId !== req.user._id) {
+      const err = new Error('Access denied');
+      err.status = 403;
+      throw err;
+    }
     const user = await Users.findOne({ _id: userId });
     if (req.file) {
       const prevPic = user.profileImgUrl.replace('https://dep-manito.s3.ap-northeast-2.amazonaws.com/', '');
