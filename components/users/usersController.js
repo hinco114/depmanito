@@ -60,7 +60,7 @@ const getUser = async (req, res, next) => {
 const editUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    if (userId !== req.user._id) {
+    if (userId !== req.user._id.toString()) {
       const err = new Error('Access denied');
       err.status = 403;
       throw err;
