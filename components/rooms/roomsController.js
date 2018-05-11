@@ -33,7 +33,7 @@ const getRoomInformation = async (req, res, next) => {
   try {
     const { roomCode } = req.params;
     const room = await Rooms.findByCode(roomCode);
-    const participantCount = await Participants.find({ roomId: room._id }).count();
+    const participantCount = room ? await Participants.find({ roomId: room._id }).count() : 0;
     res.send(room ? room.resFormat(participantCount) : { _id: null });
   } catch (err) {
     next(err);
