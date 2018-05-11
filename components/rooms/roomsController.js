@@ -44,7 +44,6 @@ const joinRoom = async (req, res, next) => {
   try {
     const { roomCode } = req.params;
     const room = await Rooms.findByCode(roomCode);
-    console.log(room.joinable);
     if (!room.joinable) {
       const err = new Error('Not joinable Room');
       err.status = 400;
