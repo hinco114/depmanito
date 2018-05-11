@@ -6,6 +6,7 @@ const schema = new mongoose.Schema({
   manitoId: { type: mongoose.Schema.ObjectId, index: true, ref: 'Users' },
   stamps: [{
     confirmed: { type: Boolean },
+    read: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now() },
   }],
   sentMessage: [{
@@ -17,23 +18,31 @@ const schema = new mongoose.Schema({
 });
 
 class Participants {
-  resFormat() {
-    return {
+  resFormat(fromManito) {
+    const ret = {
       _id: this._id,
+      roomId: this.roomId,
       userId: this.userId,
       manitoId: this.manitoId,
       stamps: this.stamps,
       sentMessage: this.sentMessage,
     };
+    if (fromManito) {
+      ret.unReadStamps = fromManito.unReadStamps;
+    }
+    return ret;
   }
 
-  findMyManitoDoc() {
-    // TODO: 확인필요
-    return this.findOne({ roomId: this.roomId, manitoId: this.userId }).exec();
+  static findByUserId(userId, roomId) {
+    return this.findOne({ userId, roomId });
   }
 
   get confirmedStamps() {
     return this.stamps.filter(stamp => stamp.confirmed === true);
+  }
+
+  get unReadStamps() {
+    return this.stamps.filter(stamp => stamp.read === false);
   }
 
   get recivedMessage() {

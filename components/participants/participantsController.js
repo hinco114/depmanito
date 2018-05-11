@@ -60,6 +60,27 @@ const matchManito = async (roomId) => {
   }
 };
 
+const requestStamp = async (req, res, next) => {
+  try {
+    const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
+    participant.stamps.push({});
+    participant.save();
+    res.send(participant.resFormat());
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getStamp = async (req, res, next) => {
+  try {
+    const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
+    const fromManito = await Participants.findByUserId(participants.manitoId, req.user.currentPlaying);
+    res.send(participants.resFormat(fromManito));
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  matchManito,
+  matchManito, requestStamp, getStamp,
 };

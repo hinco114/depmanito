@@ -42,6 +42,19 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
+const onlyCurrentPlaying = async (req, res, next) => {
+  try {
+    if (req.user.currentPlaying === null) {
+      const err = new Error('There is no currentPlaying Games');
+      err.status = 400;
+      throw err;
+    }
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  createToken, authMiddleware,
+  createToken, authMiddleware, onlyCurrentPlaying,
 };
