@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  roomId: { type: mongoose.Schema.ObjectId },
-  userId: { type: mongoose.Schema.ObjectId, index: true },
-  manitoId: { type: mongoose.Schema.ObjectId, index: true },
+  roomId: { type: mongoose.Schema.ObjectId, index: true, ref: 'Rooms' },
+  userId: { type: mongoose.Schema.ObjectId, index: true, ref: 'Users' },
+  manitoId: { type: mongoose.Schema.ObjectId, index: true, ref: 'Users' },
   stamps: [{
     confirmed: { type: Boolean },
     createdAt: { type: Date, default: Date.now() },

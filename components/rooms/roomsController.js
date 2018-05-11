@@ -1,6 +1,7 @@
 const debug = require('debug')('dev');
 const { checkProperty } = require('../manitoLib');
 const { Rooms, Participants } = require('../db');
+const { matchManito } = require('../participants/participantsController');
 
 const createRoom = async (req, res, next) => {
   try {
@@ -71,6 +72,7 @@ const changeState = async () => {
       if (room.startDate <= now) {
         if (room.state === 'READY' && room.endDate > now) {
           console.log(`Room Code [${room.roomCode}] is PLAYED!`);
+          matchManito(room._id);
           room.state = 'PLAYING';
           room.save();
         } else if (room.state === 'PLAYING' && room.endDate <= now) {

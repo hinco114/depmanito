@@ -6,7 +6,10 @@ const { createToken } = require('../../middlewares/auth');
 const uploadProfile = async (file, user) => {
   try {
     const { originalname, buffer } = file;
-    const keyName = `profile-images/${user._id}-${originalname}`;
+    let keyName = `profile-images/${user._id}-${originalname}`;
+    if (global.env === 'development') {
+      keyName = `development/${keyName}`;
+    }
     const returnFromS3 = await uploadToS3(buffer, keyName);
     user.profileImgUrl = returnFromS3.Location;
     await user.save();
