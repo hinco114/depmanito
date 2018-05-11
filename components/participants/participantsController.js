@@ -1,4 +1,5 @@
 const { Participants } = require('../db');
+const { checkProperty } = require('../manitoLib');
 
 const shuffledArray = (arr) => {
   const array = [...arr];
@@ -81,6 +82,26 @@ const getStamp = async (req, res, next) => {
   }
 };
 
+const decisionStamp = async (req, res, next) => {
+  try {
+    checkProperty(req.body, ['confirmed']);
+    const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
+    const fromManito = await Participants.findByUserId(participants.manitoId, req.user.currentPlaying);
+    const index = fromManito.stamps.findIndex(stamp => stamp._id.toString() === req.params.stampId);
+    if (index < 0) {
+      const err = new Error('Not exists stampId');
+      err.status = 400;
+      throw err;
+    }
+    fromManito.stamps[index].read = true;
+    fromManito.stamps[index].confirmed = req.body.confirmed;
+    await fromManito.save();
+    res.send(participants.resFormat(fromManito));
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  matchManito, requestStamp, getStamp,
+  matchManito, requestStamp, getStamp, decisionStamp,
 };
