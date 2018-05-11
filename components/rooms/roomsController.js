@@ -1,6 +1,6 @@
 const debug = require('debug')('dev');
 const { checkProperty } = require('../manitoLib');
-const { Rooms, Participants } = require('../db');
+const { Rooms, Participants, Users } = require('../db');
 const { matchManito } = require('../participants/participantsController');
 
 const createRoom = async (req, res, next) => {
@@ -68,15 +68,19 @@ const changeState = async () => {
   try {
     const now = new Date();
     const rooms = await Rooms.find({ state: { $ne: 'END' } });
-    rooms.forEach((room) => {
+    rooms.forEach(async (room) => {
       if (room.startDate <= now) {
+        const participants = await Participants.find({ roomId: room._id });
+        const userArray = participants.map(participant => participant.userId);
         if (room.state === 'READY' && room.endDate > now) {
           console.log(`Room Code [${room.roomCode}] is PLAYED!`);
+          await Users.updateMany({ _id: { $in: userArray } }, { $set: { currentPlaying: room._id } });
           matchManito(room._id);
           room.state = 'PLAYING';
           room.save();
         } else if (room.state === 'PLAYING' && room.endDate <= now) {
           console.log(`Room Code [${room.roomCode}] is ENDED!`);
+          await Users.updateMany({ _id: { $in: userArray } }, { $set: { currentPlaying: null } });
           room.state = 'END';
           room.save();
         }
@@ -88,5 +92,5 @@ const changeState = async () => {
 };
 
 module.exports = {
-  createRoom, getRoomInformation, changeState, joinRoom
+  createRoom, getRoomInformation, changeState, joinRoom,
 };
