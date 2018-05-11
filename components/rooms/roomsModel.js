@@ -17,13 +17,14 @@ const schema = new mongoose.Schema({
 });
 
 class Rooms {
-  resFormat() {
+  resFormat(count) {
     return {
       _id: this._id,
       roomTitle: this.roomTitle,
       roomCode: this.roomCode,
       startDate: this.startDate,
       endDate: this.endDate,
+      participantCount: count || 0,
       state: this.state,
     };
   }
