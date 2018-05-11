@@ -34,6 +34,17 @@ class Users {
       currentPlaying: this.currentPlaying || null,
     };
   }
+
+  get hintList() {
+    return [
+      `저는 ${this.gender === 'M' ? '남성' : '여성'}입니다.`,
+      `저는 ${this.birthday.getMonth() + 1}월 ${this.birthday.getDate()}일에 태어났습니다.`,
+      `저의 혈액형은 ${this.bloodType}형 입니다.`,
+      `저의 취미는 '${this.hobby}' 입니다.`,
+      `제가 좋아하는것은 '${this.like} 입니다.`,
+      `제가 싫어하는것은 '${this.dislike} 입니다.`,
+    ];
+  }
 }
 
 schema.loadClass(Users);

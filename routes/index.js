@@ -12,7 +12,7 @@ const {
 } = require('../components/users/usersController');
 const { createRoom, getRoomInformation, joinRoom } = require('../components/rooms/roomsController');
 const {
-  requestStamp, getStamp, decisionStamp,
+  requestStamp, getStamp, decisionStamp, getHints,
 } = require('../components/participants/participantsController');
 const { authMiddleware, onlyCurrentPlaying } = require('../middlewares/auth');
 
@@ -35,5 +35,7 @@ module.exports = (router) => {
     .get(authMiddleware, onlyCurrentPlaying, getStamp);
   router.route('/games/stamps/:stampId/decision')
     .post(authMiddleware, onlyCurrentPlaying, decisionStamp);
+  router.route('/games/hints')
+    .get(authMiddleware, onlyCurrentPlaying, getHints);
   return router;
 };

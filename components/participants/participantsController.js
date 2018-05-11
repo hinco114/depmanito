@@ -102,6 +102,18 @@ const decisionStamp = async (req, res, next) => {
   }
 };
 
+const getHints = async (req, res, next) => {
+  try {
+    const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
+    const fromManito = await Participants.findByUserId(participants.manitoId, req.user.currentPlaying)
+      .populate('userId');
+    const hints = fromManito.userId.hintList.slice(0, participants.confirmedStamps.length / 2);
+    res.send({ hints });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  matchManito, requestStamp, getStamp, decisionStamp,
+  matchManito, requestStamp, getStamp, decisionStamp, getHints,
 };
