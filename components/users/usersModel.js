@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   uuid: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  gender: { type: String, uppercase: true, enum: ['M', 'W'] },
+  gender: { type: String, uppercase: true, enum: ['M', 'F'] },
   birthday: { type: Date, min: new Date('1900-01-01') },
   profileImgUrl: { type: String },
   bloodType: { type: String, uppercase: true, enum: ['A', 'B', 'AB', 'O'] },
