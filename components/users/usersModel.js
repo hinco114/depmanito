@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  uuid: { type: String, required: true },
+  uuid: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   gender: { type: String, uppercase: true, enum: ['M', 'W'] },
   birthday: { type: Date, min: new Date('1900-01-01') },

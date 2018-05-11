@@ -19,14 +19,14 @@ const createUser = async (req, res, next) => {
   try {
     checkProperty(
       req.body,
-      ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike'],
+      ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike', 'pushToken'],
     );
     const {
-      uuid, name, gender, birthday, bloodType, job, hobby, like, dislike,
+      uuid, name, gender, birthday, bloodType, job, hobby, like, dislike, pushToken,
     } = req.body;
     const birthObj = new Date(Number(birthday));
     const user = new Users({
-      uuid, name, gender, birthday: birthObj, bloodType, job, hobby, like, dislike,
+      uuid, name, gender, birthday: birthObj, bloodType, job, hobby, like, dislike, pushToken,
     });
     await user.save();
     if (req.file) {
@@ -65,7 +65,6 @@ const editUser = async (req, res, next) => {
     const user = await Users.findOne({ _id: userId });
     if (req.file) {
       const prevPic = user.profileImgUrl.replace('https://dep-manito.s3.ap-northeast-2.amazonaws.com/', '');
-      console.log(prevPic);
       await deleteFromS3(prevPic);
       await uploadProfile(req.file, user);
     }
