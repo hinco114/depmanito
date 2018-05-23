@@ -69,17 +69,20 @@ const changeState = async () => {
     const now = new Date();
     const rooms = await Rooms.find({ state: { $ne: 'END' } });
     rooms.forEach(async (room) => {
+      // 시작시간이 지난 경우에만 동작
       if (room.startDate <= now) {
         const participants = await Participants.find({ roomId: room._id });
         const userArray = participants.map(participant => participant.userId);
-        if (room.state === 'READY' && room.endDate > now) {
+        if (room.state === 'READY' && room.endDate > now && userArray.length >= 3) {
+          // READY 상태에, 참여인원이 3명 이상인 경우에만 게임 시작
           console.log(`Room Code [${room.roomCode}] is PLAYED!`);
           await Users.updateMany({ _id: { $in: userArray } },
             { $set: { currentPlaying: room._id } });
           matchManito(room._id);
           room.state = 'PLAYING';
           room.save();
-        } else if (room.state === 'PLAYING' && room.endDate <= now) {
+        } else if ((room.state === 'PLAYING' && room.endDate <= now) || userArray.length < 3) {
+          // PLAYING 상태에, 끝시간이 지난 경우나, 시작시간이 자나고 참여인원이 3명 미만인 경우엔 바로 종료.
           console.log(`Room Code [${room.roomCode}] is ENDED!`);
           await Users.updateMany({ _id: { $in: userArray } }, { $set: { currentPlaying: null } });
           room.state = 'END';
