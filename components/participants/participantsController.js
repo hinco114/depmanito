@@ -143,6 +143,21 @@ const getMyManito = async (req, res, next) => {
   }
 };
 
+const getWooRung = async (req, res, next) => {
+  try {
+    const participants = await Participants.find({ manitoId: req.user._id })
+      .populate('roomId userId').sort({ createdAt: -1 });
+    const endedGames = participants.filter(participant => participant.roomId.state === 'END');
+    const resData = endedGames.map(game => ({
+      roomId: game.roomId,
+      wooRung: game.userId.resFormat(),
+    }));
+    res.send(resData);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  matchManito, requestStamp, getStamp, decisionStamp, getHints, getMyManito,
+  matchManito, requestStamp, getStamp, decisionStamp, getHints, getMyManito, getWooRung,
 };

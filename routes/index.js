@@ -12,7 +12,7 @@ const {
 } = require('../components/users/usersController');
 const { createRoom, getRoomInformation, joinRoom } = require('../components/rooms/roomsController');
 const {
-  requestStamp, getStamp, decisionStamp, getHints, getMyManito,
+  requestStamp, getStamp, decisionStamp, getHints, getMyManito, getWooRung,
 } = require('../components/participants/participantsController');
 const { authMiddleware, onlyCurrentPlaying } = require('../middlewares/auth');
 
@@ -32,6 +32,8 @@ module.exports = (router) => {
     .post(authMiddleware, joinRoom);
   router.route('/games/manito')
     .get(authMiddleware, onlyCurrentPlaying, getMyManito);
+  router.route('/games/woo-rung')
+    .get(authMiddleware, getWooRung);
   router.route('/games/stamps')
     .post(authMiddleware, onlyCurrentPlaying, requestStamp)
     .get(authMiddleware, onlyCurrentPlaying, getStamp);
