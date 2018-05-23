@@ -24,6 +24,11 @@ const createUser = async (req, res, next) => {
       req.body,
       ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike', 'pushToken'],
     );
+    if (!req.file) {
+      const err = new Error('There is No Picture');
+      err.status = 400;
+      throw err;
+    }
     const {
       uuid, name, gender, birthday, bloodType, job, hobby, like, dislike, pushToken,
     } = req.body;
@@ -32,9 +37,7 @@ const createUser = async (req, res, next) => {
       uuid, name, gender, birthday: birthObj, bloodType, job, hobby, like, dislike, pushToken,
     });
     await user.save();
-    if (req.file) {
-      await uploadProfile(req.file, user);
-    }
+    await uploadProfile(req.file, user);
     debug(`Created User Id : ${user._id}`);
     res.send(user);
   } catch (err) {
