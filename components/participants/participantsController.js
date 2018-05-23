@@ -128,6 +128,21 @@ const getHints = async (req, res, next) => {
   }
 };
 
+const getMyManito = async (req, res, next) => {
+  try {
+    const manitoDoc = await Participants.findByUserId(req.user._id, req.user.currentPlaying)
+      .populate('manitoId');
+    if (!manitoDoc) {
+      const err = new Error('Something Wrong in GetMyManito');
+      err.status = 400;
+      throw err;
+    }
+    res.send(manitoDoc.manitoId.resFormat());
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  matchManito, requestStamp, getStamp, decisionStamp, getHints,
+  matchManito, requestStamp, getStamp, decisionStamp, getHints, getMyManito,
 };
