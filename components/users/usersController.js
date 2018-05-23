@@ -20,10 +20,9 @@ const uploadProfile = async (file, user) => {
 
 const createUser = async (req, res, next) => {
   try {
-    checkProperty(
-      req.body,
-      ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike', 'pushToken'],
-    );
+    checkProperty(req.body,
+      ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike',
+        'pushToken']);
     if (!req.file) {
       const err = new Error('There is No Picture');
       err.status = 400;
