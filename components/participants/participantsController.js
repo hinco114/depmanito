@@ -64,8 +64,19 @@ const matchManito = async (roomId) => {
 const requestStamp = async (req, res, next) => {
   try {
     const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
+    if (!participant) {
+      const err = new Error('Something Wrong in RequestStamp');
+      err.status = 400;
+      throw err;
+    }
+    if (participant.unReadStamps.length > 0) {
+      const err = new Error('아직 확정받지 않은 도장이 있습니다.');
+      err.status = 400;
+      throw err;
+    }
     participant.stamps.push({});
     participant.save();
+    // TODO : FCM
     res.send(participant.resFormat());
   } catch (err) {
     next(err);
