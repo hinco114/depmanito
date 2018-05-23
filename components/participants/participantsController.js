@@ -75,7 +75,8 @@ const requestStamp = async (req, res, next) => {
 const getStamp = async (req, res, next) => {
   try {
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
-    const fromManito = await Participants.findByUserId(participants.manitoId, req.user.currentPlaying);
+    const fromManito = await Participants.findByUserId(participants.manitoId,
+      req.user.currentPlaying);
     res.send(participants.resFormat(fromManito));
   } catch (err) {
     next(err);
@@ -86,7 +87,8 @@ const decisionStamp = async (req, res, next) => {
   try {
     checkProperty(req.body, ['confirmed']);
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
-    const fromManito = await Participants.findByUserId(participants.manitoId, req.user.currentPlaying);
+    const fromManito = await Participants.findByUserId(participants.manitoId,
+      req.user.currentPlaying);
     const index = fromManito.stamps.findIndex(stamp => stamp._id.toString() === req.params.stampId);
     if (index < 0) {
       const err = new Error('Not exists stampId');
@@ -105,7 +107,8 @@ const decisionStamp = async (req, res, next) => {
 const getHints = async (req, res, next) => {
   try {
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
-    const fromManito = await Participants.findByUserId(participants.manitoId, req.user.currentPlaying)
+    const fromManito = await Participants.findByUserId(participants.manitoId,
+      req.user.currentPlaying)
       .populate('userId');
     const hints = fromManito.userId.hintList.slice(0, participants.confirmedStamps.length / 2);
     res.send({ hints });

@@ -15,5 +15,8 @@ module.exports = {
 
     // Enable console output because Node.js.
     'no-console': ['off'],
+
+    // No Error function call param in new line.
+    'function-paren-newline': ['error', 'never'],
   },
 };

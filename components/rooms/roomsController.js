@@ -74,7 +74,8 @@ const changeState = async () => {
         const userArray = participants.map(participant => participant.userId);
         if (room.state === 'READY' && room.endDate > now) {
           console.log(`Room Code [${room.roomCode}] is PLAYED!`);
-          await Users.updateMany({ _id: { $in: userArray } }, { $set: { currentPlaying: room._id } });
+          await Users.updateMany({ _id: { $in: userArray } },
+            { $set: { currentPlaying: room._id } });
           matchManito(room._id);
           room.state = 'PLAYING';
           room.save();
