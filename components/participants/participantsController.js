@@ -1,5 +1,6 @@
 const { Participants } = require('../db');
 const { checkProperty } = require('../manitoLib');
+const admin = require('firebase-admin');
 
 const shuffledArray = (arr) => {
   const array = [...arr];
@@ -63,7 +64,8 @@ const matchManito = async (roomId) => {
 
 const requestStamp = async (req, res, next) => {
   try {
-    const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
+    const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying)
+      .populate('manitoId');
     if (!participant) {
       const err = new Error('Something Wrong in RequestStamp');
       err.status = 400;
@@ -76,7 +78,19 @@ const requestStamp = async (req, res, next) => {
     }
     participant.stamps.push({});
     participant.save();
-    // TODO : FCM
+
+    const { pushToken, name } = participant.manitoId;
+    console.log(participant.manitoId);
+    if (pushToken) {
+      const message = {
+        notification: {
+          title: '누군가가 도장을 찍으려고 합니다.',
+          body: `${name}님, 누군가가 당신에게 착한일을 했습니다. 어서 확인해주세요!`,
+        },
+        token: pushToken,
+      };
+      admin.messaging().send(message);
+    }
     res.send(participant.resFormat());
   } catch (err) {
     next(err);
@@ -98,18 +112,32 @@ const decisionStamp = async (req, res, next) => {
   try {
     checkProperty(req.body, ['confirmed']);
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
-    const fromManito = await Participants.findByUserId(participants.manitoId,
-      req.user.currentPlaying);
-    const index = fromManito.stamps.findIndex(stamp => stamp._id.toString() === req.params.stampId);
+    const wooRung = await Participants.findOne({
+      manitoId: req.user._id,
+      roomId: req.user.currentPlaying,
+    });
+    const index = wooRung.stamps.findIndex(stamp => stamp._id.toString() === req.params.stampId);
     if (index < 0) {
       const err = new Error('Not exists stampId');
       err.status = 400;
       throw err;
     }
-    fromManito.stamps[index].read = true;
-    fromManito.stamps[index].confirmed = req.body.confirmed;
-    await fromManito.save();
-    res.send(participants.resFormat(fromManito));
+    wooRung.stamps[index].read = true;
+    wooRung.stamps[index].confirmed = req.body.confirmed;
+    await wooRung.save();
+    const { pushToken } = wooRung;
+    if (pushToken) {
+      const message = {
+        notification: {},
+        token: pushToken,
+      };
+      message.notification.title = req.body.confirmed ? '도장을 받았습니다!' : '도장을 못받았습니다.';
+      message.notification.body = req.body.confirmed
+        ? '마니또가 도장을 찍어주었습니다! 새로운 힌트를 얻어보세요!'
+        : '마니또가 도장을 찍어주지 않았습니다. ㅠㅠ';
+      admin.messaging().send(message);
+    }
+    res.send(participants.resFormat(wooRung));
   } catch (err) {
     next(err);
   }

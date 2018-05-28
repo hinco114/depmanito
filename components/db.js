@@ -4,6 +4,13 @@ const { mongo } = config.dbConfig;
 const mongoose = require('mongoose');
 const mongoEnv = mongo[global.env];
 
+const admin = require('firebase-admin');
+const serviceAccount = require('../configs/config').firebase;
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 const db = {};
 
 // 급해서 동적으로 require 하는거 다 빼먹고 걍 함
