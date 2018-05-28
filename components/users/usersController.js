@@ -73,6 +73,10 @@ const editUser = async (req, res, next) => {
       await deleteFromS3(prevPic);
       await uploadProfile(req.file, user);
     }
+    const { body } = req;
+    if (body.birthday) {
+      body.birthday = new Date(Number(body.birthday));
+    }
     await Users.update({ _id: userId }, { $set: req.body });
     res.end();
   } catch (err) {
