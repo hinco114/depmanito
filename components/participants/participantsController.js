@@ -89,7 +89,9 @@ const requestStamp = async (req, res, next) => {
         },
         token: pushToken,
       };
-      admin.messaging().send(message);
+      admin.messaging().send(message).catch(err => {
+        console.log(`푸시미발송 : ${err.message}`);
+      });
     }
     res.send(participant.resFormat());
   } catch (err) {
@@ -135,7 +137,9 @@ const decisionStamp = async (req, res, next) => {
       message.notification.body = req.body.confirmed
         ? '마니또가 도장을 찍어주었습니다! 새로운 힌트를 얻어보세요!'
         : '마니또가 도장을 찍어주지 않았습니다. ㅠㅠ';
-      admin.messaging().send(message);
+      admin.messaging().send(message).catch(err => {
+        console.log(`푸시미발송 : ${err.message}`);
+      });
     }
     res.send(participants.resFormat(wooRung));
   } catch (err) {
