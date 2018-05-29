@@ -150,8 +150,10 @@ const decisionStamp = async (req, res, next) => {
 const getHints = async (req, res, next) => {
   try {
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
-    const fromManito = await Participants.findByUserId(participants.manitoId,
-      req.user.currentPlaying)
+    const fromManito = await Participants.findOne({
+      manitoId: req.user._id,
+      roomId: req.user.currentPlaying,
+    })
       .populate('userId');
     const hints = fromManito.userId.hintList.slice(0, participants.confirmedStamps.length / 2);
     res.send({ hints });
