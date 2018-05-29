@@ -50,7 +50,7 @@ const matchManito = async (roomId) => {
         smallArray.shift().save();
       } else if (smallArray.length === 0 && bigArray.length >= 1) {
         // bigArray 가 2개 이상이면 B1 -> B2 연결, 1개이면 마지막 유저이므로 첫 유저와 연결.
-        bigArray[0].manitoId = bigArray.length > 2 ? bigArray[1].userId : firstUserId;
+        bigArray[0].manitoId = bigArray.length >= 2 ? bigArray[1].userId : firstUserId;
         bigArray.shift().save();
       } else {
         console.error(`[${roomId}] 매칭에서 알 수 없는 에러가 발생함.`);
