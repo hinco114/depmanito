@@ -101,9 +101,11 @@ const requestStamp = async (req, res, next) => {
 const getStamp = async (req, res, next) => {
   try {
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
-    const fromManito = await Participants.findByUserId(participants.manitoId,
-      req.user.currentPlaying);
-    res.send(participants.resFormat(fromManito));
+    const fromWoorung = await Participants.findOne({
+      manitoId: req.user._id,
+      roomId: req.user.currentPlaying,
+    });
+    res.send(participants.resFormat(fromWoorung));
   } catch (err) {
     next(err);
   }

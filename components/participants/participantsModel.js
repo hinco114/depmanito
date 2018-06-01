@@ -18,7 +18,7 @@ const schema = new mongoose.Schema({
 });
 
 class Participants {
-  resFormat(fromManito) {
+  resFormat(fromWoorung) {
     const ret = {
       _id: this._id,
       roomId: this.roomId,
@@ -27,8 +27,8 @@ class Participants {
       stamps: this.stamps,
       sentMessage: this.sentMessage,
     };
-    if (fromManito) {
-      ret.unReadStamps = fromManito.unReadStamps;
+    if (fromWoorung) {
+      ret.unReadStamps = fromWoorung.unReadStamps;
     }
     return ret;
   }
