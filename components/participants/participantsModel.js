@@ -29,6 +29,7 @@ class Participants {
     };
     if (fromWoorung) {
       ret.unReadStamps = fromWoorung.unReadStamps;
+      ret.recivedMessage = fromWoorung.recivedMessage;
     }
     return ret;
   }
@@ -46,7 +47,7 @@ class Participants {
   }
 
   get recivedMessage() {
-    // TODO: 완성필요
+    return this.sentMessage;
   }
 }
 

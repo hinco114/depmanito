@@ -193,6 +193,41 @@ const getWooRung = async (req, res, next) => {
   }
 };
 
+const createChat = async (req, res, next) => {
+  try {
+    checkProperty(req.body, ['message']);
+    const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying)
+      .populate('manitoId');
+    if (!participant) {
+      const err = new Error('Something Wrong in RequestStamp');
+      err.status = 400;
+      throw err;
+    }
+    participant.sentMessage.push({
+      message: req.body.message,
+      createdAt: Date.now(),
+    });
+    participant.save();
+
+    const { pushToken, name } = participant.manitoId;
+    if (pushToken) {
+      const message = {
+        notification: {
+          title: '누군가가 메세지를 보냈습니다.',
+          body: `${name}님, 누군가가 당신에게 메세지를 보냈습니다. 어서 확인해주세요!`,
+        },
+        token: pushToken,
+      };
+      admin.messaging().send(message).catch((err) => {
+        console.log(`푸시미발송 : ${err.message}`);
+      });
+    }
+    res.send(participant.resFormat());
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  matchManito, requestStamp, getStamp, decisionStamp, getHints, getMyManito, getWooRung,
+  matchManito, requestStamp, getStamp, decisionStamp, getHints, getMyManito, getWooRung, createChat,
 };
