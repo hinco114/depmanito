@@ -6,6 +6,17 @@ const { matchManito } = require('../participants/participantsController');
 const createRoom = async (req, res, next) => {
   try {
     checkProperty(req.body, ['roomTitle', 'roomCode', 'startDate', 'endDate']);
+    const joinedList = await Participants.find({ userId: req.user._id })
+      .populate('roomId').sort({ createdAt: -1 });
+    if (joinedList.length > 0) {
+      joinedList.forEach((participant) => {
+        if (participant.roomId.state !== 'END') {
+          const err = new Error('This user already joined Room');
+          err.status = 400;
+          throw err;
+        }
+      });
+    }
     const {
       roomTitle, roomCode, startDate, endDate,
     } = req.body;
@@ -49,11 +60,16 @@ const joinRoom = async (req, res, next) => {
       err.status = 400;
       throw err;
     }
-    const isAlreadyJoined = await Participants.findOne({ roomId: room._id, userId: req.user._id });
-    if (isAlreadyJoined) {
-      const err = new Error('Already Joined Room');
-      err.status = 400;
-      throw err;
+    const joinedList = await Participants.find({ userId: req.user._id })
+      .populate('roomId').sort({ createdAt: -1 });
+    if (joinedList.length > 0) {
+      joinedList.forEach((participant) => {
+        if (participant.roomId.state !== 'END') {
+          const err = new Error('This user already joined Room');
+          err.status = 400;
+          throw err;
+        }
+      });
     }
     const paricipant = new Participants({ roomId: room._id, userId: req.user._id });
     await paricipant.save();
