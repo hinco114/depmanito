@@ -76,7 +76,10 @@ const requestStamp = async (req, res, next) => {
       err.status = 400;
       throw err;
     }
-    participant.stamps.push({});
+    participant.stamps.push({
+      read: false,
+      createdAt: Date.now(),
+    });
     participant.save();
 
     const { pushToken, name } = participant.manitoId;
