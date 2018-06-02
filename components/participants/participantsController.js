@@ -98,7 +98,7 @@ const requestStamp = async (req, res, next) => {
   }
 };
 
-const getStamp = async (req, res, next) => {
+const getGameInfo = async (req, res, next) => {
   try {
     const participants = await Participants.findByUserId(req.user._id, req.user.currentPlaying);
     const fromWoorung = await Participants.findOne({
@@ -229,5 +229,12 @@ const createChat = async (req, res, next) => {
 };
 
 module.exports = {
-  matchManito, requestStamp, getStamp, decisionStamp, getHints, getMyManito, getWooRung, createChat,
+  matchManito,
+  requestStamp,
+  getGameInfo,
+  decisionStamp,
+  getHints,
+  getMyManito,
+  getWooRung,
+  createChat,
 };
