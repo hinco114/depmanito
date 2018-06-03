@@ -65,6 +65,13 @@ const matchManito = async (roomId) => {
             title: '참여하신 마니또 방이 시작되었습니다!',
             body: `${name}님, 참여하신 '${roomTitle}' 마니또 방이 시작되었습니다. 어서 확인해주세요!`,
           },
+          apns: {
+            payload: {
+              aps: {
+                sound: 'default',
+              },
+            },
+          },
           token: pushToken,
         };
         admin.messaging().send(message).catch((err) => {
@@ -104,6 +111,13 @@ const requestStamp = async (req, res, next) => {
         notification: {
           title: '누군가가 도장을 찍으려고 합니다.',
           body: `${name}님, 누군가가 당신에게 착한일을 했습니다. 어서 확인해주세요!`,
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+            },
+          },
         },
         token: pushToken,
       };
@@ -234,6 +248,14 @@ const createChat = async (req, res, next) => {
         notification: {
           title: '누군가가 메세지를 보냈습니다.',
           body: `${name}님, 누군가가 당신에게 메세지를 보냈습니다. 어서 확인해주세요!`,
+          sound: 'default',
+        },
+        apns: {
+          payload: {
+            aps: {
+              sound: 'default',
+            },
+          },
         },
         token: pushToken,
       };
