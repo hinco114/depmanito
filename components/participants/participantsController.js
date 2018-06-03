@@ -21,7 +21,7 @@ const shuffledArray = (arr) => {
 
 const matchManito = async (roomId) => {
   try {
-    const participants = await Participants.find({ roomId }).populate('userId', 'gender');
+    const participants = await Participants.find({ roomId }).populate('userId roomId');
     if (participants.length < 2) {
       return;
     }
@@ -56,6 +56,22 @@ const matchManito = async (roomId) => {
         console.error(`[${roomId}] 매칭에서 알 수 없는 에러가 발생함.`);
       }
     }
+    participants.forEach((participant) => {
+      const { pushToken, name } = participant.userId;
+      const { roomTitle } = participant.roomId;
+      if (pushToken) {
+        const message = {
+          notification: {
+            title: '참여하신 마니또 방이 시작되었습니다!',
+            body: `${name}님, 참여하신 '${roomTitle}' 마니또 방이 시작되었습니다. 어서 확인해주세요!`,
+          },
+          token: pushToken,
+        };
+        admin.messaging().send(message).catch((err) => {
+          console.log(`푸시미발송 : ${err.message}`);
+        });
+      }
+    });
     console.log(`[${roomId}] 매칭 완료!`);
   } catch (err) {
     throw err;
