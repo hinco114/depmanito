@@ -72,6 +72,11 @@ const matchManito = async (roomId) => {
               },
             },
           },
+          android: {
+            notification: {
+              sound: 'default',
+            },
+          },
           token: pushToken,
         };
         admin.messaging().send(message).catch((err) => {
@@ -117,6 +122,11 @@ const requestStamp = async (req, res, next) => {
             aps: {
               sound: 'default',
             },
+          },
+        },
+        android: {
+          notification: {
+            sound: 'default',
           },
         },
         token: pushToken,
@@ -255,6 +265,11 @@ const createChat = async (req, res, next) => {
             aps: {
               sound: 'default',
             },
+          },
+        },
+        android: {
+          notification: {
+            sound: 'default',
           },
         },
         token: pushToken,
