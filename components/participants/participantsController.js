@@ -258,7 +258,6 @@ const createChat = async (req, res, next) => {
         notification: {
           title: '누군가가 메세지를 보냈습니다.',
           body: `${name}님, 누군가가 당신에게 메세지를 보냈습니다. 어서 확인해주세요!`,
-          sound: 'default',
         },
         apns: {
           payload: {
