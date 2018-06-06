@@ -2,6 +2,7 @@ const debug = require('debug')('dev');
 const { checkProperty } = require('../manitoLib');
 const { Rooms, Participants, Users } = require('../db');
 const { matchManito } = require('../participants/participantsController');
+const admin = require('firebase-admin');
 
 const createRoom = async (req, res, next) => {
   try {
@@ -87,7 +88,7 @@ const changeState = async () => {
     rooms.forEach(async (room) => {
       // 시작시간이 지난 경우에만 동작
       if (room.startDate <= now) {
-        const participants = await Participants.find({ roomId: room._id });
+        const participants = await Participants.find({ roomId: room._id }).populate('userId');
         const userArray = participants.map(participant => participant.userId);
         if (room.state === 'READY' && room.endDate > now && userArray.length >= 3) {
           // READY 상태에, 참여인원이 3명 이상인 경우에만 게임 시작
@@ -103,6 +104,34 @@ const changeState = async () => {
           await Users.updateMany({ _id: { $in: userArray } }, { $set: { currentPlaying: null } });
           room.state = 'END';
           room.save();
+          participants.forEach((participant) => {
+            const { pushToken, name } = participant.userId;
+            const { roomTitle } = room;
+            if (pushToken) {
+              const message = {
+                notification: {
+                  title: '참여하신 마니또 방이 종료되었습니다!',
+                  body: `${name}님, 참여하신 '${roomTitle}' 마니또 방이 종료되었습니다. 결과를 확인하세요!`,
+                },
+                apns: {
+                  payload: {
+                    aps: {
+                      sound: 'default',
+                    },
+                  },
+                },
+                android: {
+                  notification: {
+                    sound: 'default',
+                  },
+                },
+                token: pushToken,
+              };
+              admin.messaging().send(message).catch((err) => {
+                console.log(`푸시미발송 : ${err.message}`);
+              });
+            }
+          });
         }
       }
     });
