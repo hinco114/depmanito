@@ -4,6 +4,7 @@ const { S3 } = require('../configs/config');
 AWS.config.region = S3.region;
 AWS.config.update({ accessKeyId: S3.accessKeyId, secretAccessKey: S3.secretAccessKey });
 const s3 = new AWS.S3({ params: { Bucket: S3.bucketName } });
+const admin = require('firebase-admin');
 
 /**
  *  Check body has all properties in propertyArray
@@ -76,6 +77,35 @@ const deleteFromS3 = keyName => new Promise((resolve, reject) => {
   }
 });
 
+const sendPush = async (pushToken, title, body) => {
+  try {
+    const msgObj = {
+      notification: {
+        title,
+        body,
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: 'default',
+          },
+        },
+      },
+      android: {
+        notification: {
+          sound: 'default',
+        },
+      },
+      token: pushToken,
+    };
+    admin.messaging().send(msgObj).catch((err) => {
+      console.log(`푸시미발송 : ${err.message}`);
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
 module.exports = {
-  checkProperty, uploadToS3, deleteFromS3,
+  checkProperty, uploadToS3, deleteFromS3, sendPush,
 };

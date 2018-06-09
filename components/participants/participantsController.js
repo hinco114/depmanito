@@ -1,6 +1,5 @@
 const { Participants } = require('../db');
-const { checkProperty } = require('../manitoLib');
-const admin = require('firebase-admin');
+const { checkProperty, sendPush } = require('../manitoLib');
 
 const shuffledArray = (arr) => {
   const array = [...arr];
@@ -60,28 +59,9 @@ const matchManito = async (roomId) => {
       const { pushToken, name } = participant.userId;
       const { roomTitle } = participant.roomId;
       if (pushToken) {
-        const message = {
-          notification: {
-            title: '참여하신 마니또 방이 시작되었습니다!',
-            body: `${name}님, 참여하신 '${roomTitle}' 마니또 방이 시작되었습니다. 어서 확인해주세요!`,
-          },
-          apns: {
-            payload: {
-              aps: {
-                sound: 'default',
-              },
-            },
-          },
-          android: {
-            notification: {
-              sound: 'default',
-            },
-          },
-          token: pushToken,
-        };
-        admin.messaging().send(message).catch((err) => {
-          console.log(`푸시미발송 : ${err.message}`);
-        });
+        const title = '참여하신 마니또 방이 시작되었습니다!';
+        const body = `${name}님, 참여하신 '${roomTitle}' 마니또 방이 시작되었습니다. 어서 확인해주세요!`;
+        sendPush(pushToken, title, body);
       }
     });
     console.log(`[${roomId}] 매칭 완료!`);
@@ -112,28 +92,9 @@ const requestStamp = async (req, res, next) => {
 
     const { pushToken, name } = participant.manitoId;
     if (pushToken) {
-      const message = {
-        notification: {
-          title: '누군가가 도장을 찍으려고 합니다.',
-          body: `${name}님, 누군가가 당신에게 착한일을 했습니다. 어서 확인해주세요!`,
-        },
-        apns: {
-          payload: {
-            aps: {
-              sound: 'default',
-            },
-          },
-        },
-        android: {
-          notification: {
-            sound: 'default',
-          },
-        },
-        token: pushToken,
-      };
-      admin.messaging().send(message).catch((err) => {
-        console.log(`푸시미발송 : ${err.message}`);
-      });
+      const title = '누군가가 도장을 찍으려고 합니다.';
+      const body = `${name}님, 누군가가 당신에게 착한일을 했습니다. 어서 확인해주세요!`;
+      sendPush(pushToken, title, body);
     }
     res.send(participant.resFormat());
   } catch (err) {
@@ -173,17 +134,11 @@ const decisionStamp = async (req, res, next) => {
     await wooRung.save();
     const { pushToken } = wooRung;
     if (pushToken) {
-      const message = {
-        notification: {},
-        token: pushToken,
-      };
-      message.notification.title = req.body.confirmed ? '도장을 받았습니다!' : '도장을 못받았습니다.';
-      message.notification.body = req.body.confirmed
+      const title = req.body.confirmed ? '도장을 받았습니다!' : '도장을 못받았습니다.';
+      const body = req.body.confirmed
         ? '마니또가 도장을 찍어주었습니다! 새로운 힌트를 얻어보세요!'
         : '마니또가 도장을 찍어주지 않았습니다. ㅠㅠ';
-      admin.messaging().send(message).catch((err) => {
-        console.log(`푸시미발송 : ${err.message}`);
-      });
+      sendPush(pushToken, title, body);
     }
     res.send(participants.resFormat(wooRung));
   } catch (err) {
@@ -254,28 +209,9 @@ const createChat = async (req, res, next) => {
 
     const { pushToken, name } = participant.manitoId;
     if (pushToken) {
-      const message = {
-        notification: {
-          title: '누군가가 메세지를 보냈습니다.',
-          body: `${name}님, 누군가가 당신에게 메세지를 보냈습니다. 어서 확인해주세요!`,
-        },
-        apns: {
-          payload: {
-            aps: {
-              sound: 'default',
-            },
-          },
-        },
-        android: {
-          notification: {
-            sound: 'default',
-          },
-        },
-        token: pushToken,
-      };
-      admin.messaging().send(message).catch((err) => {
-        console.log(`푸시미발송 : ${err.message}`);
-      });
+      const title = '누군가가 메세지를 보냈습니다.';
+      const body = `${name}님, 누군가가 당신에게 메세지를 보냈습니다. 어서 확인해주세요!`;
+      sendPush(pushToken, title, body);
     }
     res.send(participant.resFormat());
   } catch (err) {

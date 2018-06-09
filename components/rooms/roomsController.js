@@ -1,8 +1,7 @@
 const debug = require('debug')('dev');
-const { checkProperty } = require('../manitoLib');
+const { checkProperty, sendPush } = require('../manitoLib');
 const { Rooms, Participants, Users } = require('../db');
 const { matchManito } = require('../participants/participantsController');
-const admin = require('firebase-admin');
 
 const createRoom = async (req, res, next) => {
   try {
@@ -134,28 +133,9 @@ const changeState = async () => {
             const { pushToken, name } = participant.userId;
             const { roomTitle } = room;
             if (pushToken) {
-              const message = {
-                notification: {
-                  title: '참여하신 마니또 방이 종료되었습니다!',
-                  body: `${name}님, 참여하신 '${roomTitle}' 마니또 방이 종료되었습니다. 결과를 확인하세요!`,
-                },
-                apns: {
-                  payload: {
-                    aps: {
-                      sound: 'default',
-                    },
-                  },
-                },
-                android: {
-                  notification: {
-                    sound: 'default',
-                  },
-                },
-                token: pushToken,
-              };
-              admin.messaging().send(message).catch((err) => {
-                console.log(`푸시미발송 : ${err.message}`);
-              });
+              const title = '참여하신 마니또 방이 종료되었습니다!';
+              const body = `${name}님, 참여하신 '${roomTitle}' 마니또 방이 종료되었습니다. 결과를 확인하세요!`;
+              sendPush(pushToken, title, body);
             }
           });
         }
