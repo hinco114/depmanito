@@ -81,6 +81,32 @@ const joinRoom = async (req, res, next) => {
   }
 };
 
+const leaveRoom = async (req, res, next) => {
+  try {
+    const recentRoom = await Participants.findOne({ userId: req.user._id })
+      .populate('roomId').sort({ createdAt: -1 });
+    if (!recentRoom) {
+      const err = new Error('User doesn\'t joined any room');
+      err.status = 400;
+      throw err;
+    }
+    switch (recentRoom.roomId.state) {
+      case 'READY': {
+        await Participants.deleteOne({ _id: recentRoom._id });
+        break;
+      }
+      default: {
+        const err = new Error('User cannot leave room');
+        err.status = 400;
+        throw err;
+      }
+    }
+    res.end();
+  } catch (err) {
+    next(err);
+  }
+};
+
 const changeState = async () => {
   try {
     const now = new Date();
@@ -141,5 +167,5 @@ const changeState = async () => {
 };
 
 module.exports = {
-  createRoom, getRoomInformation, changeState, joinRoom,
+  createRoom, getRoomInformation, changeState, joinRoom, leaveRoom,
 };

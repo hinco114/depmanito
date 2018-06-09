@@ -10,7 +10,9 @@ const multipart = multer({
 const {
   getUser, createUser, editUser, loginUser,
 } = require('../components/users/usersController');
-const { createRoom, getRoomInformation, joinRoom } = require('../components/rooms/roomsController');
+const {
+  createRoom, getRoomInformation, joinRoom, leaveRoom,
+} = require('../components/rooms/roomsController');
 const {
   requestStamp, getGameInfo, decisionStamp, getHints, getMyManito, getWooRung, createChat,
 } = require('../components/participants/participantsController');
@@ -30,6 +32,8 @@ module.exports = (router) => {
     .get(authMiddleware, getRoomInformation);
   router.route('/rooms/:roomCode/join')
     .post(authMiddleware, joinRoom);
+  router.route('/rooms/leave')
+    .post(authMiddleware, leaveRoom);
   router.route('/games/manito')
     .get(authMiddleware, onlyCurrentPlaying, getMyManito);
   router.route('/games/woo-rung')
