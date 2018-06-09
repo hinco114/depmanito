@@ -123,6 +123,15 @@ const changeState = async () => {
           matchManito(room._id);
           room.state = 'PLAYING';
           room.save();
+          participants.forEach((participant) => {
+            const { pushToken, name } = participant.userId;
+            const { roomTitle } = room;
+            if (pushToken) {
+              const title = '참여하신 마니또 방이 시작되었습니다!';
+              const body = `${name}님, 참여하신 '${roomTitle}' 마니또 방이 시작되었습니다. 마니또를 확인해보세요!`;
+              sendPush(pushToken, title, body);
+            }
+          });
         } else if ((room.state === 'PLAYING' && room.endDate <= now) || userArray.length < 3) {
           // PLAYING 상태에, 끝시간이 지난 경우나, 시작시간이 자나고 참여인원이 3명 미만인 경우엔 바로 종료.
           console.log(`Room Code [${room.roomCode}] is ENDED!`);
