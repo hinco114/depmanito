@@ -14,7 +14,7 @@ const {
   createRoom, getRoomInformation, joinRoom, leaveRoom,
 } = require('../components/rooms/roomsController');
 const {
-  requestStamp, getGameInfo, decisionStamp, getHints, getMyManito, getWooRung, createChat,
+  requestStamp, getGameInfo, decisionStamp, getHints, getMyManito, getWooRung, createChat, replyChat,
 } = require('../components/participants/participantsController');
 const { authMiddleware, onlyCurrentPlaying } = require('../middlewares/auth');
 
@@ -44,6 +44,8 @@ module.exports = (router) => {
     .post(authMiddleware, onlyCurrentPlaying, requestStamp);
   router.route('/games/chats')
     .post(authMiddleware, onlyCurrentPlaying, createChat);
+  router.route('/games/chats/reply')
+    .post(authMiddleware, onlyCurrentPlaying, replyChat);
   router.route('/games/stamps/:stampId/decision')
     .post(authMiddleware, onlyCurrentPlaying, decisionStamp);
   router.route('/games/hints')

@@ -188,7 +188,7 @@ const createChat = async (req, res, next) => {
     const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying)
       .populate('manitoId');
     if (!participant) {
-      const err = new Error('Something Wrong in RequestStamp');
+      const err = new Error('Something Wrong in Create Chat');
       err.status = 400;
       throw err;
     }
@@ -210,6 +210,38 @@ const createChat = async (req, res, next) => {
   }
 };
 
+const replyChat = async (req, res, next) => {
+  try {
+    checkProperty(req.body, ['message']);
+    const participant = await Participants.findByUserId(req.user._id, req.user.currentPlaying)
+      .populate('manitoId');
+    const woorung = await Participants.findOne({
+      manitoId: req.user._id,
+      roomId: req.user.currentPlaying,
+    });
+    if (!participant || woorung) {
+      const err = new Error('Something Wrong in replyChat');
+      err.status = 400;
+      throw err;
+    }
+    participant.repliedMessage.push({
+      message: req.body.message,
+      createdAt: Date.now(),
+    });
+    participant.save();
+
+    const { pushToken, name } = woorung;
+    if (pushToken) {
+      const title = '마니또가 답장을 보냈습니다.';
+      const body = `${name}님, 마니또가 답장을 보냈습니다. 어서 확인해주세요!`;
+      sendPush(pushToken, title, body);
+    }
+    res.send('');
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   matchManito,
   requestStamp,
@@ -219,4 +251,5 @@ module.exports = {
   getMyManito,
   getWooRung,
   createChat,
+  replyChat,
 };

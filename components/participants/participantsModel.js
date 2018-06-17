@@ -13,6 +13,10 @@ const schema = new mongoose.Schema({
     message: { type: String },
     createdAt: { type: Date, default: Date.now() },
   }],
+  repliedMessage: [{
+    message: { type: String },
+    createdAt: { type: Date, default: Date.now() },
+  }],
 }, {
   timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
 });
