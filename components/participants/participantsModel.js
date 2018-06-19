@@ -30,10 +30,14 @@ class Participants {
       manitoId: this.manitoId,
       stamps: this.stamps,
       sentMessage: this.sentMessage,
+      repliedMessage: this.repliedMessage,
     };
     if (fromWoorung) {
       ret.unReadStamps = fromWoorung.unReadStamps;
       ret.recivedMessage = fromWoorung.recivedMessage;
+    }
+    if (this.manitoId.repliedMessage) {
+      ret.manitoRepliedMessage = this.manitoId.repliedMessage;
     }
     return ret;
   }
