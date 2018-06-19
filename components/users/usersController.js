@@ -21,19 +21,17 @@ const uploadProfile = async (file, user) => {
 const createUser = async (req, res, next) => {
   try {
     checkProperty(req.body,
-      ['uuid', 'name', 'gender', 'birthday', 'bloodType', 'job', 'hobby', 'like', 'dislike',
-        'pushToken']);
+      ['uuid', 'name', 'gender', 'job', 'hobby', 'like', 'dislike', 'pushToken']);
     if (!req.file) {
       const err = new Error('There is No Picture');
       err.status = 400;
       throw err;
     }
     const {
-      uuid, name, gender, birthday, bloodType, job, hobby, like, dislike, pushToken,
+      uuid, name, gender, job, hobby, like, dislike, pushToken, userOwnHints,
     } = req.body;
-    const birthObj = new Date(Number(birthday));
     const user = new Users({
-      uuid, name, gender, birthday: birthObj, bloodType, job, hobby, like, dislike, pushToken,
+      uuid, name, gender, job, hobby, like, dislike, pushToken, userOwnHints,
     });
     await user.save();
     await uploadProfile(req.file, user);
@@ -74,10 +72,7 @@ const editUser = async (req, res, next) => {
       await uploadProfile(req.file, user);
     }
     const { body } = req;
-    if (body.birthday) {
-      body.birthday = new Date(Number(body.birthday));
-    }
-    await Users.update({ _id: userId }, { $set: req.body });
+    await Users.update({ _id: userId }, { $set: body });
     res.end();
   } catch (err) {
     next(err);

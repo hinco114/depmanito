@@ -99,8 +99,10 @@ const getGameInfo = async (req, res, next) => {
     const fromWoorung = await Participants.findOne({
       manitoId: req.user._id,
       roomId: req.user.currentPlaying,
-    });
-    res.send(participants.resFormat(fromWoorung));
+    }).populate('userId');
+    const resData = participants.resFormat(fromWoorung);
+    resData.maxHints = fromWoorung.userId.hintList.length;
+    res.send(resData);
   } catch (err) {
     next(err);
   }
@@ -143,8 +145,7 @@ const getHints = async (req, res, next) => {
     const fromManito = await Participants.findOne({
       manitoId: req.user._id,
       roomId: req.user.currentPlaying,
-    })
-      .populate('userId');
+    }).populate('userId');
     const hints = fromManito.userId.hintList.slice(0, participants.confirmedStamps.length / 2);
     res.send({ hints });
   } catch (err) {
