@@ -8,7 +8,6 @@ const schema = new mongoose.Schema({
   // bloodType: { type: String, uppercase: true, enum: ['A', 'B', 'AB', 'O'] },
   userOwnHints: {
     type: [String],
-    maxlength: 16,
   },
   profileImgUrl: { type: String },
   job: { type: String },

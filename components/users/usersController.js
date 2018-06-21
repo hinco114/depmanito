@@ -21,15 +21,19 @@ const uploadProfile = async (file, user) => {
 const createUser = async (req, res, next) => {
   try {
     checkProperty(req.body,
-      ['uuid', 'name', 'gender', 'job', 'hobby', 'like', 'dislike', 'pushToken']);
+      ['uuid', 'name', 'gender', 'job', 'hobby', 'like', 'dislike', 'pushToken', 'userOwnHints']);
     if (!req.file) {
       const err = new Error('There is No Picture');
       err.status = 400;
       throw err;
     }
     const {
-      uuid, name, gender, job, hobby, like, dislike, pushToken, userOwnHints,
+      uuid, name, gender, job, hobby, like, dislike, pushToken,
     } = req.body;
+    let { userOwnHints } = req.body;
+    if (!Array.isArray(userOwnHints) && typeof userOwnHints === 'string') {
+      userOwnHints = [userOwnHints];
+    }
     const user = new Users({
       uuid, name, gender, job, hobby, like, dislike, pushToken, userOwnHints,
     });
