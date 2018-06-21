@@ -220,7 +220,7 @@ const replyChat = async (req, res, next) => {
       manitoId: req.user._id,
       roomId: req.user.currentPlaying,
     });
-    if (!participant || woorung) {
+    if (!participant || !woorung) {
       const err = new Error('Something Wrong in replyChat');
       err.status = 400;
       throw err;
